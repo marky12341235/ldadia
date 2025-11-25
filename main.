@@ -1,0 +1,168 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Management System</title>
+  <style>
+    :root {
+      --bg_main: #f4f4f9;
+      --text_main: #222;
+      --accent: #4a90e2;
+      --danger: #e94e4e;
+      --success: #4caf50;
+    }
+    body {
+      background: var(--bg_main);
+      color: var(--text_main);
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input, button {
+      margin: 5px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      cursor: pointer;
+    }
+    button.create { background: var(--accent); color: white; }
+    button.update { background: var(--success); color: white; }
+    button.delete { background: var(--danger); color: white; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background: var(--accent);
+      color: white;
+    }
+    tr:nth-child(even) { background: #f9f9f9; }
+    .highlight { background: yellow; }
+  </style>
+</head>
+<body>
+  <h1>Student Management System</h1>
+
+  <!-- Search -->
+  <input type="text" id="searchBox" placeholder="Search by name">
+  <button onclick="searchStudent()">Search</button>
+
+  <!-- Form -->
+  <div>
+    <input type="text" id="studentNo" placeholder="ID">
+    <input type="text" id="name" placeholder="Name" autocomplete="off">
+    <input type="number" id="age" placeholder="Age" autocomplete="off">
+    <input type="text" id="grade" placeholder="Grade" autocomplete="off">
+    <button class="create" onclick="createStudent()">Add Student</button>
+    <button class="update" onclick="updateStudent()">Update Student</button>
+  </div>
+
+  <!-- Table -->
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Grade</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="studentTableBody"></tbody>
+  </table>
+
+  <script>
+    let students = [
+      { studentNo: '1', name: "Alice", age: 19, grade: 'A' },
+      { studentNo: '2', name: "Bob", age: 16, grade: 'B' },
+      { studentNo: '3', name: "Charlie", age: 12, grade: 'C' },
+    ];
+
+    function renderTable(data = students) {
+      const tbody = document.getElementById("studentTableBody");
+      tbody.innerHTML = "";
+      data.forEach(student => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${student.studentNo}</td>
+            <td>${student.name}</td>
+            <td>${student.age}</td>
+            <td>${student.grade}</td>
+            <td>
+              <button class="delete" onclick="deleteStudent('${student.studentNo}')">Delete</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function createStudent() {
+      const newStudent = {
+        studentNo: document.getElementById("studentNo").value,
+        name: document.getElementById("name").value,
+        age: document.getElementById("age").value,
+        grade: document.getElementById("grade").value,
+      };
+
+      if (!newStudent.studentNo || !newStudent.name) {
+        alert("Please enter at least ID and Name.");
+        return;
+      }
+
+      students.push(newStudent);
+      clearInputs();
+      renderTable();
+    }
+
+    function deleteStudent(no) {
+      students = students.filter(s => s.studentNo !== no);
+      renderTable();
+    }
+
+    function searchStudent() {
+      const keyword = document.getElementById("searchBox").value.toLowerCase();
+      const filtered = students.filter(s => s.name.toLowerCase().includes(keyword));
+      renderTable(filtered);
+    }
+
+    function updateStudent() {
+      const id = document.getElementById("studentNo").value;
+      let student = students.find(s => s.studentNo === id);
+      if (student) {
+        student.name = document.getElementById("name").value;
+        student.age = document.getElementById("age").value;
+        student.grade = document.getElementById("grade").value;
+        renderTable();
+        clearInputs();
+      } else {
+        alert("Student not found!");
+      }
+    }
+
+    function clearInputs() {
+      document.getElementById("studentNo").value = "";
+      document.getElementById("name").value = "";
+      document.getElementById("age").value = "";
+      document.getElementById("grade").value = "";
+    }
+
+    // Initial render
+    renderTable();
+  </script>
+</body>
+</html>
